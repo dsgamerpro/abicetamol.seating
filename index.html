@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abiball Sitzplatzreservierung</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    .stage {
+      width: 300px;
+      height: 40px;
+      background: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 3rem;
+      font-weight: bold;
+    }
+    .hall {
+      display: grid;
+      grid-template-columns: repeat(4, auto);
+      gap: 60px 40px;
+      justify-content: center;
+    }
+    .table-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+    .table {
+      width: 60px;
+      height: 270px;
+      background-color: #444;
+      border-radius: 4px;
+    }
+    .seats-column {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .seat {
+      width: 30px;
+      height: 30px;
+      background-color: #4caf50;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .seat.selected {
+      background-color: #ffc107;
+    }
+    .seat.reserved {
+      background-color: #e53935;
+      cursor: not-allowed;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 2rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      border-radius: 8px;
+      min-width: 250px;
+      position: absolute;
+    }
+    .modal input, .modal button {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .modal button {
+      background: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .modal button:hover {
+      background: #1976d2;
+    }
+    .close-modal {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .overlay {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Abiball Sitzplatzreservierung</h1>
+  <div class="stage">Bühne</div>
+  <div class="hall" id="hall"></div>
+
+  <div class="modal" id="reservation-modal">
+    <button class="close-modal" id="close-modal">×</button>
+    <label for="name">Familienname:</label>
+    <input type="text" id="name" required />
+    <button id="submit-reservation">Plätze reservieren</button>
+  </div>
+
+  <script>
+    const hall = document.getElementById("hall");
+    const modal = document.getElementById("reservation-modal");
+    const nameInput = document.getElementById("name");
+    const submitButton = document.getElementById("submit-reservation");
+    const closeButton = document.getElementById("close-modal");
+
+    const totalTables = 16;
+    const seatsPerSide = 9;
+    const reservedSeats = new Set();
+    const selectedSeats = new Set();
+    let seatNumber = 1;
+
+    for (let i = 0; i < totalTables; i++) {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("table-wrapper");
+
+      const leftCol = document.createElement("div");
+      leftCol.classList.add("seats-column");
+      for (let j = 0; j < seatsPerSide; j++) {
+        const seat = createSeat(seatNumber++);
+        leftCol.appendChild(seat);
+      }
+
+      const table = document.createElement("div");
+      table.classList.add("table");
+
+      const rightCol = document.createElement("div");
+      rightCol.classList.add("seats-column");
+      for (let j = 0; j < seatsPerSide; j++) {
+        const seat = createSeat(seatNumber++);
+        rightCol.appendChild(seat);
+      }
+
+      wrapper.appendChild(leftCol);
+      wrapper.appendChild(table);
+      wrapper.appendChild(rightCol);
+      hall.appendChild(wrapper);
+    }
+
+    function createSeat(number) {
+      const seat = document.createElement("div");
+      seat.classList.add("seat");
+      seat.textContent = number;
+      seat.dataset.seatNumber = number;
+      if (reservedSeats.has(number)) {
+        seat.classList.add("reserved");
+      } else {
+        seat.addEventListener("click", () => toggleSeat(seat, number));
+      }
+      return seat;
+    }
+
+    function toggleSeat(seat, number) {
+      if (seat.classList.contains("reserved")) return;
+      seat.classList.toggle("selected");
+      if (selectedSeats.has(number)) {
+        selectedSeats.delete(number);
+      } else {
+        selectedSeats.add(number);
+      }
+      if (selectedSeats.size > 0) {
+        modal.style.display = "flex";
+      } else {
+        modal.style.display = "none";
+      }
+    }
+
+    submitButton.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if (!name || selectedSeats.size === 0) return;
+
+      selectedSeats.forEach((seatNumber) => {
+        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
+        seatDiv.classList.remove("selected");
+        seatDiv.classList.add("reserved");
+        seatDiv.removeEventListener("click", () => {});
+        reservedSeats.add(seatNumber);
+      });
+
+      alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
+      selectedSeats.clear();
+      nameInput.value = "";
+      modal.style.display = "none";
+    });
+
+    closeButton.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+  </script>
+</body>
+</html>
