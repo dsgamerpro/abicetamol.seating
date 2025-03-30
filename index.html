@@ -224,6 +224,49 @@
     closeButton.addEventListener("click", () => {
       modal.style.display = "none";
     });
-  </script>
+    const clearButton = document.getElementById("clear-selection");
+
+    function updateClearButtonVisibility() {
+      clearButton.style.display = selectedSeats.size > 0 ? "block" : "none";
+    }
+
+    clearButton.addEventListener("click", () => {
+      selectedSeats.forEach((seatNumber) => {
+        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
+        seatDiv.classList.remove("selected");
+      });
+      selectedSeats.clear();
+      modal.style.display = "none";
+      updateClearButtonVisibility();
+    });
+
+    // Hook visibility update into toggleSeat and submit
+    const originalToggleSeat = toggleSeat;
+    toggleSeat = function(seat, number, event) {
+      originalToggleSeat(seat, number, event);
+      updateClearButtonVisibility();
+    };
+
+    submitButton.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if (!name || selectedSeats.size === 0) return;
+
+      selectedSeats.forEach((seatNumber) => {
+        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
+        seatDiv.classList.remove("selected");
+        seatDiv.classList.add("reserved");
+        seatDiv.removeEventListener("click", () => {});
+        reservedSeats.add(seatNumber);
+      });
+
+      alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
+      selectedSeats.clear();
+      nameInput.value = "";
+      modal.style.display = "none";
+      updateClearButtonVisibility();
+    });
+
+</script>
+  <button id="clear-selection" style="display:none;position:fixed;bottom:20px;right:20px;padding:0.8rem 1rem;background:#e53935;color:white;border:none;border-radius:8px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;z-index:20;">Auswahl aufheben</button>
 </body>
 </html>
