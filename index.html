@@ -12,11 +12,7 @@
       padding: 2rem;
       display: flex;
       flex-direction: column;
-      overflow-x: auto;
-    }
-    .scroll-container {
-      width: 100%;
-      overflow-x: auto;
+      align-items: center;
     }
     .stage {
       width: 300px;
@@ -26,7 +22,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 3rem auto;
+      margin-bottom: 3rem;
       font-weight: bold;
     }
     .hall {
@@ -34,7 +30,6 @@
       grid-template-columns: repeat(4, auto);
       gap: 60px 40px;
       justify-content: center;
-      min-width: max-content;
     }
     .table-wrapper {
       display: flex;
@@ -121,10 +116,8 @@
   </style>
 </head>
 <body>
-  <div class="scroll-container">
-    <div class="stage">Bühne</div>
-    <div class="hall" id="hall"></div>
-  </div>
+  <div class="stage">Bühne</div>
+  <div class="hall" id="hall"></div>
 
   <div class="modal" id="reservation-modal">
     <button class="close-modal" id="close-modal">×</button>
