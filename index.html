@@ -14,8 +14,7 @@
       flex-direction: column;
       align-items: center;
       overflow-x: auto;
-      transform: scale(0.85);
-      transform-origin: top center;
+      
     }
     .stage {
       width: 240px;
@@ -216,7 +215,7 @@
         reservedSeats.add(seatNumber);
       });
 
-      alert(`Danke, Familie ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
+      alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
       selectedSeats.clear();
       nameInput.value = "";
       modal.style.display = "none";
