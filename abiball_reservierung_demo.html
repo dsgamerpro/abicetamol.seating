@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abiball Sitzplatzreservierung</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    #seat-map {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+    .seat {
+      width: 40px;
+      height: 40px;
+      background-color: #4caf50;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .seat.selected {
+      background-color: #ffc107;
+    }
+    .seat.reserved {
+      background-color: #e53935;
+      cursor: not-allowed;
+    }
+    #reservation-form {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 300px;
+      width: 100%;
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    button {
+      background: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Abiball Sitzplatzreservierung</h1>
+  <div id="seat-map"></div>
+
+  <form id="reservation-form">
+    <label for="name">Dein Name:</label>
+    <input type="text" id="name" required />
+    <button type="submit">Platz reservieren</button>
+  </form>
+
+  <script>
+    const seatMap = document.getElementById("seat-map");
+    const form = document.getElementById("reservation-form");
+    const nameInput = document.getElementById("name");
+
+    const reservedSeats = [3, 7, 15];
+    const selectedSeats = new Set();
+
+    for (let i = 1; i <= 40; i++) {
+      const seat = document.createElement("div");
+      seat.classList.add("seat");
+      seat.textContent = i;
+      if (reservedSeats.includes(i)) {
+        seat.classList.add("reserved");
+      } else {
+        seat.addEventListener("click", () => {
+          seat.classList.toggle("selected");
+          if (selectedSeats.has(i)) {
+            selectedSeats.delete(i);
+          } else {
+            selectedSeats.add(i);
+          }
+          form.style.display = selectedSeats.size > 0 ? "flex" : "none";
+        });
+      }
+      seatMap.appendChild(seat);
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = nameInput.value;
+      alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
+      selectedSeats.forEach((seatNumber) => {
+        const seatDiv = seatMap.children[seatNumber - 1];
+        seatDiv.classList.remove("selected");
+        seatDiv.classList.add("reserved");
+        seatDiv.removeEventListener("click", () => {});
+      });
+      selectedSeats.clear();
+      form.reset();
+      form.style.display = "none";
+    });
+  </script>
+</body>
+</html>
