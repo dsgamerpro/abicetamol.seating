@@ -235,7 +235,19 @@
       reservedSeats.add(seatNumber);
     });
 
-    alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
+    fetch("https://script.google.com/macros/s/AKfycbzMbrYC4TQjJlMwEX5sA5CIiuetrgBH1m4ry4PKEWpgbWSZhbur3B5yQtVrvRjgr7ZS/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          seats: [...selectedSeats]
+        })
+      });
+
+      alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
     selectedSeats.clear();
     nameInput.value = "";
     modal.style.display = "none";
