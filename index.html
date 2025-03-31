@@ -114,9 +114,6 @@
       justify-content: center;
       cursor: pointer;
     }
-    .overlay {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -130,112 +127,111 @@
     <button id="submit-reservation">Plätze reservieren</button>
   </div>
 
-  
   <button id="clear-selection" style="display:none;position:fixed;bottom:20px;right:20px;padding:0.8rem 1rem;background:#e53935;color:white;border:none;border-radius:8px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;z-index:20;">Auswahl aufheben</button>
-<button id="clear-selection" style="display:none;position:fixed;bottom:20px;right:20px;padding:0.8rem 1rem;background:#e53935;color:white;border:none;border-radius:8px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;z-index:20;">Auswahl aufheben</button>
 
-<script>
-  const hall = document.getElementById("hall");
-  const modal = document.getElementById("reservation-modal");
-  const nameInput = document.getElementById("name");
-  const submitButton = document.getElementById("submit-reservation");
-  const closeButton = document.getElementById("close-modal");
-  const clearButton = document.getElementById("clear-selection");
+  <script>
+    const hall = document.getElementById("hall");
+    const modal = document.getElementById("reservation-modal");
+    const nameInput = document.getElementById("name");
+    const submitButton = document.getElementById("submit-reservation");
+    const closeButton = document.getElementById("close-modal");
+    const clearButton = document.getElementById("clear-selection");
 
-  const totalTables = 16;
-  const seatsPerSide = 9;
-  const reservedSeats = new Set();
-  const selectedSeats = new Set();
-  let seatNumber = 1;
-  let lastClickedSeat = null;
+    const totalTables = 16;
+    const seatsPerSide = 9;
+    const reservedSeats = new Set();
+    const selectedSeats = new Set();
+    let seatNumber = 1;
 
-  for (let i = 0; i < totalTables; i++) {
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("table-wrapper");
+    for (let i = 0; i < totalTables; i++) {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("table-wrapper");
 
-    const leftCol = document.createElement("div");
-    leftCol.classList.add("seats-column");
-    for (let j = 0; j < seatsPerSide; j++) {
-      const seat = createSeat(seatNumber++);
-      leftCol.appendChild(seat);
+      const leftCol = document.createElement("div");
+      leftCol.classList.add("seats-column");
+      for (let j = 0; j < seatsPerSide; j++) {
+        const seat = createSeat(seatNumber++);
+        leftCol.appendChild(seat);
+      }
+
+      const table = document.createElement("div");
+      table.classList.add("table");
+
+      const rightCol = document.createElement("div");
+      rightCol.classList.add("seats-column");
+      for (let j = 0; j < seatsPerSide; j++) {
+        const seat = createSeat(seatNumber++);
+        rightCol.appendChild(seat);
+      }
+
+      wrapper.appendChild(leftCol);
+      wrapper.appendChild(table);
+      wrapper.appendChild(rightCol);
+      hall.appendChild(wrapper);
     }
 
-    const table = document.createElement("div");
-    table.classList.add("table");
-
-    const rightCol = document.createElement("div");
-    rightCol.classList.add("seats-column");
-    for (let j = 0; j < seatsPerSide; j++) {
-      const seat = createSeat(seatNumber++);
-      rightCol.appendChild(seat);
+    function createSeat(number) {
+      const seat = document.createElement("div");
+      seat.classList.add("seat");
+      seat.textContent = number;
+      seat.dataset.seatNumber = number;
+      if (reservedSeats.has(number)) {
+        seat.classList.add("reserved");
+      } else {
+        seat.addEventListener("click", (e) => toggleSeat(seat, number, e));
+      }
+      return seat;
     }
 
-    wrapper.appendChild(leftCol);
-    wrapper.appendChild(table);
-    wrapper.appendChild(rightCol);
-    hall.appendChild(wrapper);
-  }
+    function toggleSeat(seat, number, event) {
+      if (seat.classList.contains("reserved")) return;
+      seat.classList.toggle("selected");
+      if (selectedSeats.has(number)) {
+        selectedSeats.delete(number);
+      } else {
+        selectedSeats.add(number);
+      }
 
-  function createSeat(number) {
-    const seat = document.createElement("div");
-    seat.classList.add("seat");
-    seat.textContent = number;
-    seat.dataset.seatNumber = number;
-    if (reservedSeats.has(number)) {
-      seat.classList.add("reserved");
-    } else {
-      seat.addEventListener("click", (e) => toggleSeat(seat, number, e));
-    }
-    return seat;
-  }
+      if (selectedSeats.size > 0) {
+        const rect = seat.getBoundingClientRect();
+        modal.style.top = `${window.scrollY + rect.top}px`;
+        modal.style.left = `${window.scrollX + rect.left + 40}px`;
+        modal.style.display = "flex";
+      } else {
+        modal.style.display = "none";
+      }
 
-  function toggleSeat(seat, number, event) {
-    if (seat.classList.contains("reserved")) return;
-    seat.classList.toggle("selected");
-    if (selectedSeats.has(number)) {
-      selectedSeats.delete(number);
-    } else {
-      selectedSeats.add(number);
+      updateClearButtonVisibility();
     }
 
-    if (selectedSeats.size > 0) {
-      const rect = seat.getBoundingClientRect();
-      modal.style.top = `${window.scrollY + rect.top}px`;
-      modal.style.left = `${window.scrollX + rect.left + 40}px`;
-      modal.style.display = "flex";
-    } else {
+    function updateClearButtonVisibility() {
+      clearButton.style.display = selectedSeats.size > 0 ? "block" : "none";
+    }
+
+    clearButton.addEventListener("click", () => {
+      selectedSeats.forEach((seatNumber) => {
+        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
+        seatDiv.classList.remove("selected");
+      });
+      selectedSeats.clear();
       modal.style.display = "none";
-    }
-    updateClearButtonVisibility();
-  }
-
-  function updateClearButtonVisibility() {
-    clearButton.style.display = selectedSeats.size > 0 ? "block" : "none";
-  }
-
-  clearButton.addEventListener("click", () => {
-    selectedSeats.forEach((seatNumber) => {
-      const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
-      seatDiv.classList.remove("selected");
-    });
-    selectedSeats.clear();
-    modal.style.display = "none";
-    updateClearButtonVisibility();
-  });
-
-  submitButton.addEventListener("click", () => {
-    const name = nameInput.value.trim();
-    if (!name || selectedSeats.size === 0) return;
-
-    selectedSeats.forEach((seatNumber) => {
-      const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
-      seatDiv.classList.remove("selected");
-      seatDiv.classList.add("reserved");
-      seatDiv.removeEventListener("click", () => {});
-      reservedSeats.add(seatNumber);
+      updateClearButtonVisibility();
     });
 
-    fetch("https://script.google.com/macros/s/AKfycbzMbrYC4TQjJlMwEX5sA5CIiuetrgBH1m4ry4PKEWpgbWSZhbur3B5yQtVrvRjgr7ZS/exec", {
+    submitButton.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if (!name || selectedSeats.size === 0) return;
+
+      selectedSeats.forEach((seatNumber) => {
+        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
+        seatDiv.classList.remove("selected");
+        seatDiv.classList.add("reserved");
+        seatDiv.removeEventListener("click", () => {});
+        reservedSeats.add(seatNumber);
+      });
+
+      // 🔗 Google Sheets Integration
+      fetch("https://script.google.com/macros/s/AKfycbzMbrYC4TQjJlMwEX5sA5CIiuetrgBH1m4ry4PKEWpgbWSZhbur3B5yQtVrvRjgr7ZS/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
@@ -248,15 +244,15 @@
       });
 
       alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
-    selectedSeats.clear();
-    nameInput.value = "";
-    modal.style.display = "none";
-    updateClearButtonVisibility();
-  });
+      selectedSeats.clear();
+      nameInput.value = "";
+      modal.style.display = "none";
+      updateClearButtonVisibility();
+    });
 
-  closeButton.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-</script>
+    closeButton.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+  </script>
 </body>
 </html>
