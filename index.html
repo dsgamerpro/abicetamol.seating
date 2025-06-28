@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sitzplatz-Suche Abiball</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #seating-chart {
+      position: relative;
+      display: inline-block;
+      max-width: 800px;
+    }
+    #seating-chart img {
+      width: 100%;
+      height: auto;
+    }
+    .highlight {
+      position: absolute;
+      border: 3px solid deeppink;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 10px deeppink;
+      z-index: 10;
+    }
+    select {
+      margin: 20px auto;
+      font-size: 16px;
+      padding: 6px 12px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sitzplatzsuche Abiball</h1>
+  <p>Wähle deinen Namen aus:</p>
+  <select id="nameSelect" onchange="highlightTable()">
+    <option value="">-- Bitte Namen wählen --</option>
+    <option value="Al Mallah">Al Mallah</option><option value="Albert">Albert</option><option value="Bakir">Bakir</option><option value="Bochem">Bochem</option><option value="Brüßel">Brüßel</option><option value="Bugatto">Bugatto</option><option value="Bähr">Bähr</option><option value="Böhme">Böhme</option><option value="Büllesbach">Büllesbach</option><option value="Cevela">Cevela</option><option value="Chmiel">Chmiel</option><option value="Christian">Christian</option><option value="Cosic">Cosic</option><option value="Cumpanici">Cumpanici</option><option value="De Waele">De Waele</option><option value="Diewald">Diewald</option><option value="Dresen">Dresen</option><option value="Eck">Eck</option><option value="Eckhard">Eckhard</option><option value="Ekler">Ekler</option><option value="Fichna">Fichna</option><option value="Friesen">Friesen</option><option value="Gardi">Gardi</option><option value="Gensel">Gensel</option><option value="Gerboga">Gerboga</option><option value="Gottschling">Gottschling</option><option value="Habroune">Habroune</option><option value="Hansen">Hansen</option><option value="Hartmann">Hartmann</option><option value="Hashemian">Hashemian</option><option value="Hemgesberg">Hemgesberg</option><option value="Henseler">Henseler</option><option value="Herweg">Herweg</option><option value="Hirgen">Hirgen</option><option value="Hoffmann">Hoffmann</option><option value="Hußlein">Hußlein</option><option value="Jäger">Jäger</option><option value="Kaasch">Kaasch</option><option value="Kelter">Kelter</option><option value="Kempchen">Kempchen</option><option value="Klein">Klein</option><option value="Konda">Konda</option><option value="Krasniqui">Krasniqui</option><option value="Krieger">Krieger</option><option value="Kriese">Kriese</option><option value="Krämer">Krämer</option><option value="LehrerInnen">LehrerInnen</option><option value="Lischke">Lischke</option><option value="Lojade">Lojade</option><option value="Lübke">Lübke</option><option value="Mahlberg">Mahlberg</option><option value="Maktad">Maktad</option><option value="Marienfeld">Marienfeld</option><option value="Mazur">Mazur</option><option value="McCann">McCann</option><option value="Michalska">Michalska</option><option value="Milani">Milani</option><option value="Over">Over</option><option value="Petereit">Petereit</option><option value="Poggel">Poggel</option><option value="Quannani">Quannani</option><option value="Raaf">Raaf</option><option value="Reuter">Reuter</option><option value="Rexhepi">Rexhepi</option><option value="Richter">Richter</option><option value="Rillig">Rillig</option><option value="Ritz">Ritz</option><option value="Romauer">Romauer</option><option value="Romes">Romes</option><option value="Roos">Roos</option><option value="Salomon">Salomon</option><option value="Schilling">Schilling</option><option value="Schmiing">Schmiing</option><option value="Schmitz. B">Schmitz. B</option><option value="Schmitz. N">Schmitz. N</option><option value="Schultheis">Schultheis</option><option value="Schwarz">Schwarz</option><option value="Shakir">Shakir</option><option value="Simon">Simon</option><option value="Sistig">Sistig</option><option value="Steinhoff">Steinhoff</option><option value="Straßburger">Straßburger</option><option value="Studeny">Studeny</option><option value="Thevis">Thevis</option><option value="Thome">Thome</option><option value="Ucar">Ucar</option><option value="Wall">Wall</option><option value="Wandel">Wandel</option><option value="Wehrend">Wehrend</option><option value="Wölfing">Wölfing</option><option value="Younssi">Younssi</option><option value="Yousif">Yousif</option><option value="Zubair">Zubair</option><option value="Zwick">Zwick</option><option value="v. Kannen">v. Kannen</option>
+  </select>
+
+  <div id="seating-chart">
+    <img src="sitzplan.png" alt="Sitzplan">
+    <div id="highlightBox" class="highlight" style="display:none;"></div>
+  </div>
+
+  <script>
+    const guests = {
+  "Al Mallah": 28,
+  "Albert": 15,
+  "Bakir": 23,
+  "Bochem": 25,
+  "Brüßel": 43,
+  "Bugatto": 41,
+  "Bähr": 21,
+  "Böhme": 31,
+  "Büllesbach": 37,
+  "Cevela": 26,
+  "Chmiel": 4,
+  "Christian": 19,
+  "Cosic": 45,
+  "Cumpanici": 38,
+  "De Waele": 5,
+  "Diewald": 10,
+  "Dresen": 22,
+  "Eck": 10,
+  "Eckhard": 46,
+  "Ekler": 11,
+  "Fichna": 37,
+  "Friesen": 2,
+  "Gardi": 41,
+  "Gensel": 9,
+  "Gerboga": 40,
+  "Gottschling": 27,
+  "Habroune": 27,
+  "Hansen": 1,
+  "Hartmann": 35,
+  "Hashemian": 20,
+  "Hemgesberg": 20,
+  "Henseler": 11,
+  "Herweg": 36,
+  "Hirgen": 10,
+  "Hoffmann": 36,
+  "Hußlein": 39,
+  "Jäger": 28,
+  "Kaasch": 29,
+  "Kelter": 39,
+  "Kempchen": 44,
+  "Klein": 3,
+  "Konda": 31,
+  "Krasniqui": 24,
+  "Krieger": 38,
+  "Kriese": 33,
+  "Krämer": 8,
+  "LehrerInnen": 6,
+  "Lischke": 46,
+  "Lojade": 1,
+  "Lübke": 14,
+  "Mahlberg": 35,
+  "Maktad": 25,
+  "Marienfeld": 13,
+  "Mazur": 44,
+  "McCann": 13,
+  "Michalska": 24,
+  "Milani": 24,
+  "Over": 26,
+  "Petereit": 32,
+  "Poggel": 17,
+  "Quannani": 42,
+  "Raaf": 2,
+  "Reuter": 30,
+  "Rexhepi": 41,
+  "Richter": 18,
+  "Rillig": 3,
+  "Ritz": 4,
+  "Romauer": 43,
+  "Romes": 16,
+  "Roos": 12,
+  "Salomon": 5,
+  "Schilling": 42,
+  "Schmiing": 32,
+  "Schmitz. B": 30,
+  "Schmitz. N": 45,
+  "Schultheis": 15,
+  "Schwarz": 16,
+  "Shakir": 42,
+  "Simon": 19,
+  "Sistig": 33,
+  "Steinhoff": 12,
+  "Straßburger": 8,
+  "Studeny": 11,
+  "Thevis": 8,
+  "Thome": 34,
+  "Ucar": 29,
+  "Wall": 42,
+  "Wandel": 14,
+  "Wehrend": 18,
+  "Wölfing": 9,
+  "Younssi": 42,
+  "Yousif": 42,
+  "Zubair": 40,
+  "Zwick": 21,
+  "v. Kannen": 3,
+};
+
+    const tablePositions = {
+  1: [21, 7, 4, 4],
+  2: [35, 7, 4, 4],
+  3: [49, 7, 4, 4],
+  4: [63, 7, 4, 4],
+  5: [21, 15, 4, 4],
+  6: [35, 15, 4, 4],
+  7: [49, 15, 4, 4],
+  8: [63, 15, 4, 4],
+  9: [21, 23, 4, 4],
+  10: [35, 23, 4, 4],
+  11: [49, 23, 4, 4],
+  12: [63, 23, 4, 4],
+  13: [21, 31, 4, 4],
+  14: [35, 31, 4, 4],
+  15: [49, 31, 4, 4],
+  16: [63, 31, 4, 4],
+  17: [21, 39, 4, 4],
+  18: [35, 39, 4, 4],
+  19: [49, 39, 4, 4],
+  20: [63, 39, 4, 4],
+  21: [21, 47, 4, 4],
+  22: [35, 47, 4, 4],
+  23: [49, 47, 4, 4],
+  24: [63, 47, 4, 4],
+  25: [21, 55, 4, 4],
+  26: [35, 55, 4, 4],
+  27: [49, 55, 4, 4],
+  28: [63, 55, 4, 4],
+  29: [21, 63, 4, 4],
+  30: [35, 63, 4, 4],
+  31: [49, 63, 4, 4],
+  32: [63, 63, 4, 4],
+  42: [5, 7, 5, 4],
+  43: [5, 13, 5, 4],
+  44: [5, 19, 5, 4],
+  45: [5, 25, 5, 4],
+  46: [5, 31, 5, 4],
+  33: [78, 7, 5, 4],
+  34: [78, 13, 5, 4],
+  35: [78, 19, 5, 4],
+  36: [78, 25, 5, 4],
+  37: [78, 31, 5, 4],
+  38: [78, 37, 5, 4],
+  39: [78, 43, 5, 4],
+  40: [78, 49, 5, 4],
+  41: [78, 55, 5, 4],
+};
+
+    function highlightTable() {
+      const name = document.getElementById("nameSelect").value;
+      const table = guests[name];
+      const box = document.getElementById("highlightBox");
+      if (!table || !tablePositions[table]) {
+        box.style.display = "none";
+        return;
+      }
+      const [x, y, w, h] = tablePositions[table];
+      box.style.display = "block";
+      box.style.left = x + "%";
+      box.style.top = y + "%";
+      box.style.width = w + "%";
+      box.style.height = h + "%";
+    }
+  </script>
+</body>
+</html>
