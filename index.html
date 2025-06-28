@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sitzplatz-Suche Abiball</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #seating-chart {
+      position: relative;
+      display: inline-block;
+    }
+    #seating-chart img {
+      width: auto;
+      max-width: 100%;
+      height: auto;
+    }
+    .highlight {
+      position: absolute;
+      border: 3px solid deeppink;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 10px deeppink;
+      z-index: 10;
+    }
+    select {
+      margin: 20px auto;
+      font-size: 16px;
+      padding: 6px 12px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sitzplatzsuche Abiball</h1>
+  <p>Wähle deinen Namen aus:</p>
+  <select id="nameSelect" onchange="highlightTable()">
+    <option value="">-- Bitte Namen wählen --</option>
+    <option value="Al Mallah">Al Mallah</option><option value="Albert">Albert</option><option value="Bakir">Bakir</option><option value="Bochem">Bochem</option><option value="Brüßel">Brüßel</option><option value="Bugatto">Bugatto</option><option value="Bähr">Bähr</option><option value="Böhme">Böhme</option><option value="Büllesbach">Büllesbach</option><option value="Cevela">Cevela</option><option value="Chmiel">Chmiel</option><option value="Christian">Christian</option><option value="Cosic">Cosic</option><option value="Cumpanici">Cumpanici</option><option value="De Waele">De Waele</option><option value="Diewald">Diewald</option><option value="Dresen">Dresen</option><option value="Eck">Eck</option><option value="Eckhard">Eckhard</option><option value="Ekler">Ekler</option><option value="Fichna">Fichna</option><option value="Friesen">Friesen</option><option value="Gardi">Gardi</option><option value="Gensel">Gensel</option><option value="Gerboga">Gerboga</option><option value="Gottschling">Gottschling</option><option value="Habroune">Habroune</option><option value="Hansen">Hansen</option><option value="Hartmann">Hartmann</option><option value="Hashemian">Hashemian</option><option value="Hemgesberg">Hemgesberg</option><option value="Henseler">Henseler</option><option value="Herweg">Herweg</option><option value="Hirgen">Hirgen</option><option value="Hoffmann">Hoffmann</option><option value="Hußlein">Hußlein</option><option value="Jäger">Jäger</option><option value="Kaasch">Kaasch</option><option value="Kelter">Kelter</option><option value="Kempchen">Kempchen</option><option value="Klein">Klein</option><option value="Konda">Konda</option><option value="Krasniqui">Krasniqui</option><option value="Krieger">Krieger</option><option value="Kriese">Kriese</option><option value="Krämer">Krämer</option><option value="LehrerInnen">LehrerInnen</option><option value="Lischke">Lischke</option><option value="Lojade">Lojade</option><option value="Lübke">Lübke</option><option value="Mahlberg">Mahlberg</option><option value="Maktad">Maktad</option><option value="Marienfeld">Marienfeld</option><option value="Mazur">Mazur</option><option value="McCann">McCann</option><option value="Michalska">Michalska</option><option value="Milani">Milani</option><option value="Over">Over</option><option value="Petereit">Petereit</option><option value="Poggel">Poggel</option><option value="Quannani">Quannani</option><option value="Raaf">Raaf</option><option value="Reuter">Reuter</option><option value="Rexhepi">Rexhepi</option><option value="Richter">Richter</option><option value="Rillig">Rillig</option><option value="Ritz">Ritz</option><option value="Romauer">Romauer</option><option value="Romes">Romes</option><option value="Roos">Roos</option><option value="Salomon">Salomon</option><option value="Schilling">Schilling</option><option value="Schmiing">Schmiing</option><option value="Schmitz. B">Schmitz. B</option><option value="Schmitz. N">Schmitz. N</option><option value="Schultheis">Schultheis</option><option value="Schwarz">Schwarz</option><option value="Shakir">Shakir</option><option value="Simon">Simon</option><option value="Sistig">Sistig</option><option value="Steinhoff">Steinhoff</option><option value="Straßburger">Straßburger</option><option value="Studeny">Studeny</option><option value="Thevis">Thevis</option><option value="Thome">Thome</option><option value="Ucar">Ucar</option><option value="Wall">Wall</option><option value="Wandel">Wandel</option><option value="Wehrend">Wehrend</option><option value="Wölfing">Wölfing</option><option value="Younssi">Younssi</option><option value="Yousif">Yousif</option><option value="Zubair">Zubair</option><option value="Zwick">Zwick</option><option value="v. Kannen">v. Kannen</option>
+  </select>
+
+  <div id="seating-chart">
+    <img id="seatingImage" src="sitzplan.png" alt="Sitzplan">
+    <div id="highlightBox" class="highlight" style="display:none;"></div>
+  </div>
+
+  <script>
+    const guests = {
+  "Al Mallah": 28,
+  "Albert": 15,
+  "Bakir": 23,
+  "Bochem": 25,
+  "Brüßel": 43,
+  "Bugatto": 41,
+  "Bähr": 21,
+  "Böhme": 31,
+  "Büllesbach": 37,
+  "Cevela": 26,
+  "Chmiel": 4,
+  "Christian": 19,
+  "Cosic": 45,
+  "Cumpanici": 38,
+  "De Waele": 5,
+  "Diewald": 10,
+  "Dresen": 22,
+  "Eck": 10,
+  "Eckhard": 46,
+  "Ekler": 11,
+  "Fichna": 37,
+  "Friesen": 2,
+  "Gardi": 41,
+  "Gensel": 9,
+  "Gerboga": 40,
+  "Gottschling": 27,
+  "Habroune": 27,
+  "Hansen": 1,
+  "Hartmann": 35,
+  "Hashemian": 20,
+  "Hemgesberg": 20,
+  "Henseler": 11,
+  "Herweg": 36,
+  "Hirgen": 10,
+  "Hoffmann": 36,
+  "Hußlein": 39,
+  "Jäger": 28,
+  "Kaasch": 29,
+  "Kelter": 39,
+  "Kempchen": 44,
+  "Klein": 3,
+  "Konda": 31,
+  "Krasniqui": 24,
+  "Krieger": 38,
+  "Kriese": 33,
+  "Krämer": 8,
+  "LehrerInnen": 6,
+  "Lischke": 46,
+  "Lojade": 1,
+  "Lübke": 14,
+  "Mahlberg": 35,
+  "Maktad": 25,
+  "Marienfeld": 13,
+  "Mazur": 44,
+  "McCann": 13,
+  "Michalska": 24,
+  "Milani": 24,
+  "Over": 26,
+  "Petereit": 32,
+  "Poggel": 17,
+  "Quannani": 42,
+  "Raaf": 2,
+  "Reuter": 30,
+  "Rexhepi": 41,
+  "Richter": 18,
+  "Rillig": 3,
+  "Ritz": 4,
+  "Romauer": 43,
+  "Romes": 16,
+  "Roos": 12,
+  "Salomon": 5,
+  "Schilling": 42,
+  "Schmiing": 32,
+  "Schmitz. B": 30,
+  "Schmitz. N": 45,
+  "Schultheis": 15,
+  "Schwarz": 16,
+  "Shakir": 42,
+  "Simon": 19,
+  "Sistig": 33,
+  "Steinhoff": 12,
+  "Straßburger": 8,
+  "Studeny": 11,
+  "Thevis": 8,
+  "Thome": 34,
+  "Ucar": 29,
+  "Wall": 42,
+  "Wandel": 14,
+  "Wehrend": 18,
+  "Wölfing": 9,
+  "Younssi": 42,
+  "Yousif": 42,
+  "Zubair": 40,
+  "Zwick": 21,
+  "v. Kannen": 3,
+};
+    const tablePositions = {
+  1: [250, 180, 50, 50],
+  2: [470, 180, 50, 50],
+  3: [690, 180, 50, 50],
+  4: [910, 180, 50, 50],
+  5: [250, 340, 50, 50],
+  6: [470, 340, 50, 50],
+  7: [690, 340, 50, 50],
+  8: [910, 340, 50, 50],
+  9: [250, 500, 50, 50],
+  10: [470, 500, 50, 50],
+  11: [690, 500, 50, 50],
+  12: [910, 500, 50, 50],
+  13: [250, 660, 50, 50],
+  14: [470, 660, 50, 50],
+  15: [690, 660, 50, 50],
+  16: [910, 660, 50, 50],
+  17: [250, 820, 50, 50],
+  18: [470, 820, 50, 50],
+  19: [690, 820, 50, 50],
+  20: [910, 820, 50, 50],
+  21: [250, 980, 50, 50],
+  22: [470, 980, 50, 50],
+  23: [690, 980, 50, 50],
+  24: [910, 980, 50, 50],
+  25: [250, 1140, 50, 50],
+  26: [470, 1140, 50, 50],
+  27: [690, 1140, 50, 50],
+  28: [910, 1140, 50, 50],
+  29: [250, 1300, 50, 50],
+  30: [470, 1300, 50, 50],
+  31: [690, 1300, 50, 50],
+  32: [910, 1300, 50, 50],
+  42: [70, 180, 60, 60],
+  43: [70, 340, 60, 60],
+  44: [70, 500, 60, 60],
+  45: [70, 660, 60, 60],
+  46: [70, 820, 60, 60],
+  33: [1110, 180, 60, 60],
+  34: [1110, 340, 60, 60],
+  35: [1110, 500, 60, 60],
+  36: [1110, 660, 60, 60],
+  37: [1110, 820, 60, 60],
+  38: [1110, 980, 60, 60],
+  39: [1110, 1140, 60, 60],
+  40: [1110, 1300, 60, 60],
+  41: [1110, 1460, 60, 60],
+};
+
+    function highlightTable() {
+      const name = document.getElementById("nameSelect").value;
+      const table = guests[name];
+      const box = document.getElementById("highlightBox");
+      const img = document.getElementById("seatingImage");
+
+      if (!table || !tablePositions[table]) {
+        box.style.display = "none";
+        return;
+      }
+
+      const rect = img.getBoundingClientRect();
+      const scaleX = img.clientWidth / 1441;
+      const scaleY = img.clientHeight / 2048;
+
+      const [x, y, w, h] = tablePositions[table];
+      box.style.display = "block";
+      box.style.left = (x * scaleX) + "px";
+      box.style.top = (y * scaleY) + "px";
+      box.style.width = (w * scaleX) + "px";
+      box.style.height = (h * scaleY) + "px";
+    }
+  </script>
+</body>
+</html>
