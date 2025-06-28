@@ -30,6 +30,11 @@
       position: relative;
       transform: scale(0.85);
       transform-origin: top center;
+      display: flex;
+      justify-content: center;
+    }
+    .container-inner {
+      position: relative;
     }
     .table {
       position: absolute;
@@ -62,7 +67,9 @@
   <select id="nameSelect" onchange="highlight()">
     <option value="">-- Bitte Namen wählen --</option>
   </select>
-  <div class="container" id="plan"></div>
+  <div class="container">
+    <div class="container-inner" id="plan"></div>
+  </div>
 
   <script>
     const guests = {
