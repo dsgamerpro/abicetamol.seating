@@ -19,8 +19,8 @@
     }
     #plan {
       position: relative;
-      width: 800px;
-      height: 1200px;
+      width: 1000px;
+      height: 1300px;
       margin: auto;
       background: #f9f9f9;
       border: 2px solid #ccc;
@@ -40,7 +40,7 @@
     }
     .rect-table {
       border-radius: 5px;
-      width: 100px;
+      width: 90px;
       height: 30px;
     }
     .highlight {
@@ -60,41 +60,46 @@
 
   <script>
     const guests = {
-      "Salomon": 5,
-      "Schilling": 42,
-      "Albert": 15,
-      "Bakir": 23,
-      "Friesen": 2,
-      "Schwarz": 16,
-      "Mazur": 44,
-      "Bugatto": 41,
-      "Gerboga": 40,
-      "Wall": 42,
-      "Cumpanici": 38
-      // Weitere Gäste eintragen...
+      "Al Mallah": 28, "Albert": 15, "Bakir": 23, "Bochem": 25, "Brüßel": 43, "Bugatto": 41,
+      "Bähr": 21, "Böhme": 31, "Büllesbach": 37, "Cevela": 26, "Chmiel": 4, "Christian": 19,
+      "Cosic": 45, "Cumpanici": 38, "De Waele": 5, "Diewald": 10, "Dresen": 22, "Eck": 10,
+      "Eckhard": 46, "Ekler": 11, "Fichna": 37, "Friesen": 2, "Gardi": 41, "Gensel": 9,
+      "Gerboga": 40, "Gottschling": 27, "Habroune": 27, "Hansen": 1, "Hartmann": 35,
+      "Hashemian": 20, "Hemgesberg": 20, "Henseler": 11, "Herweg": 36, "Hirgen": 10,
+      "Hoffmann": 36, "Hußlein": 39, "Jäger": 28, "Kaasch": 29, "Kelter": 39, "Kempchen": 44,
+      "Klein": 3, "Konda": 31, "Krasniqui": 24, "Krieger": 38, "Kriese": 33, "Krämer": 8,
+      "Lischke": 46, "Lojade": 1, "Lübke": 14, "Mahlberg": 35, "Maktad": 25, "Marienfeld": 13,
+      "Mazur": 44, "McCann": 13, "Michalska": 24, "Milani": 24, "Over": 26, "Petereit": 32,
+      "Poggel": 17, "Quannani": 42, "Raaf": 2, "Reuter": 30, "Rexhepi": 41, "Richter": 18,
+      "Rillig": 3, "Ritz": 4, "Romauer": 43, "Romes": 16, "Roos": 12, "Salomon": 5,
+      "Schilling": 42, "Schmiing": 32, "Schmitz. B": 30, "Schmitz. N": 45, "Schultheis": 15,
+      "Schwarz": 16, "Shakir": 42, "Simon": 19, "Sistig": 33, "Steinhoff": 12, "Straßburger": 8,
+      "Studeny": 11, "Thevis": 8, "Thome": 34, "Ucar": 29, "Wall": 42, "Wandel": 14,
+      "Wehrend": 18, "Wölfing": 9, "Younssi": 42, "Yousif": 42, "Zubair": 40, "Zwick": 21,
+      "v. Kannen": 3
     };
 
     const positions = {};
     const plan = document.getElementById("plan");
     const select = document.getElementById("nameSelect");
 
-    // RUND: 4 Spalten, 8 Reihen, Start x=100, y=100
+    // RUND: 4 Spalten, 8 Reihen, mehr Abstand, Start x=120, y=100
     let i = 1;
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 4; col++) {
-        const x = 100 + col * 150;
-        const y = 100 + row * 100;
+        const x = 120 + col * 180;
+        const y = 100 + row * 110;
         createTable(i, x, y);
         i++;
       }
     }
     // RECHTECKIG LINKS: 42–46
     for (let j = 0; j < 5; j++) {
-      createTable(42 + j, 10, 100 + j * 100, true);
+      createTable(42 + j, 10, 100 + j * 110, true);
     }
     // RECHTECKIG RECHTS: 33–41
     for (let j = 0; j < 9; j++) {
-      createTable(33 + j, 680, 100 + j * 100, true);
+      createTable(33 + j, 890, 100 + j * 110, true);
     }
 
     function createTable(num, x, y, rect = false) {
