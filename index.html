@@ -1,258 +1,122 @@
+# Bereite eine vereinfachte Datenstruktur für die Gäste vor (Name → Tisch)
+import pandas as pd
+
+# Extrahierte Zuordnung aus dem Word-Dokument
+guest_table_data = {
+    "Al Mallah": 28, "Albert": 15, "Bakir": 23, "Bochem": 25, "Brüßel": 43, "Bugatto": 41,
+    "Bähr": 21, "Böhme": 31, "Büllesbach": 37, "Cevela": 26, "Chmiel": 4, "Christian": 19,
+    "Cosic": 45, "Cumpanici": 38, "De Waele": 5, "Diewald": 10, "Dresen": 22, "Eck": 10,
+    "Eckhard": 46, "Ekler": 11, "Fichna": 37, "Friesen": 2, "Gardi": 41, "Gensel": 9,
+    "Gerboga": 40, "Gottschling": 27, "Habroune": 27, "Hansen": 1, "Hartmann": 35,
+    "Hashemian": 20, "Hemgesberg": 20, "Henseler": 11, "Herweg": 36, "Hirgen": 10,
+    "Hoffmann": 36, "Hußlein": 39, "Jäger": 28, "Kaasch": 29, "Kelter": 39, "Kempchen": 44,
+    "Klein": 3, "Konda": 31, "Krasniqui": 24, "Krieger": 38, "Kriese": 33, "Krämer": 8,
+    "LehrerInnen": 6, "Lischke": 46, "Lojade": 1, "Lübke": 14, "Mahlberg": 35, "Maktad": 25,
+    "Marienfeld": 13, "Mazur": 44, "McCann": 13, "Michalska": 24, "Milani": 24, "Over": 26,
+    "Petereit": 32, "Poggel": 17, "Quannani": 42, "Raaf": 2, "Reuter": 30, "Rexhepi": 41,
+    "Richter": 18, "Rillig": 3, "Ritz": 4, "Romauer": 43, "Romes": 16, "Roos": 12,
+    "Salomon": 5, "Schilling": 42, "Schmiing": 32, "Schmitz. B": 30, "Schmitz. N": 45,
+    "Schultheis": 15, "Schwarz": 16, "Shakir": 42, "Simon": 19, "Sistig": 33, "Steinhoff": 12,
+    "Straßburger": 8, "Studeny": 11, "Thevis": 8, "Thome": 34, "Ucar": 29, "Wall": 42,
+    "Wandel": 14, "Wehrend": 18, "Wölfing": 9, "Younssi": 42, "Yousif": 42, "Zubair": 40,
+    "Zwick": 21, "v. Kannen": 3
+}
+
+# Umwandeln in JavaScript-Objekt als Text
+guest_js = "const guests = {\n"
+for name, table in sorted(guest_table_data.items()):
+    guest_js += f'  "{name}": {table},\n'
+guest_js += "};"
+
+# HTML Template mit Suchfeld, Bild, Highlight-Funktion
+html_template = f"""
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abiball Sitzplatzreservierung</title>
+  <title>Sitzplatz-Suche Abiball</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: auto;
-    }
-    .stage {
-      width: 300px;
-      height: 40px;
-      background: #000;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: max-content;
-      margin-bottom: 3rem;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-    .hall {
-      display: grid;
-      grid-template-columns: repeat(4, auto);
-      gap: 60px 40px;
-      justify-content: center;
-      min-width: max-content;
-    }
-    .table-wrapper {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 8px;
-    }
-    .table {
-      width: 60px;
-      height: 270px;
-      background-color: #444;
-      border-radius: 4px;
-    }
-    .seats-column {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .seat {
-      width: 30px;
-      height: 30px;
-      background-color: #4caf50;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .seat.selected {
-      background-color: #ffc107;
-    }
-    .seat.reserved {
-      background-color: #e53935;
-      cursor: not-allowed;
-    }
-    .modal {
+    body {{
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }}
+    #seating-chart {{
+      position: relative;
+      display: inline-block;
+    }}
+    #seating-chart img {{
+      max-width: 100%;
+      height: auto;
+    }}
+    .highlight {{
       position: absolute;
-      background: white;
-      padding: 2rem;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      z-index: 10;
-      display: none;
-      flex-direction: column;
-      gap: 1rem;
-      border-radius: 8px;
-      min-width: 250px;
-    }
-    .modal input, .modal button {
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    .modal button {
-      background: #2196f3;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .modal button:hover {
-      background: #1976d2;
-    }
-    .close-modal {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background: #e53935;
-      color: white;
-      border: none;
+      border: 3px solid red;
       border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      font-weight: bold;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
+      pointer-events: none;
+      box-shadow: 0 0 10px red;
+    }}
+    select {{
+      margin: 20px;
+      font-size: 16px;
+      padding: 5px;
+    }}
   </style>
 </head>
 <body>
-  <div class="stage">Bühne</div>
-  <div class="hall" id="hall"></div>
+  <h1>Sitzplatzsuche Abiball</h1>
+  <p>Wähle deinen Namen aus, um deinen Tisch zu sehen:</p>
+  <select id="nameSelect" onchange="highlightTable()">
+    <option value="">-- Bitte Namen wählen --</option>
+    {''.join([f'<option value="{name}">{name}</option>' for name in sorted(guest_table_data)])}
+  </select>
 
-  <div class="modal" id="reservation-modal">
-    <button class="close-modal" id="close-modal">×</button>
-    <label for="name">Familienname:</label>
-    <input type="text" id="name" required />
-    <button id="submit-reservation">Plätze reservieren</button>
+  <div id="seating-chart">
+    <img src="sitzplan.png" alt="Sitzplan">
+    <div id="highlightBox" class="highlight" style="display:none;"></div>
   </div>
 
-  <button id="clear-selection" style="display:none;position:fixed;bottom:20px;right:20px;padding:0.8rem 1rem;background:#e53935;color:white;border:none;border-radius:8px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;z-index:20;">Auswahl aufheben</button>
-
   <script>
-    const hall = document.getElementById("hall");
-    const modal = document.getElementById("reservation-modal");
-    const nameInput = document.getElementById("name");
-    const submitButton = document.getElementById("submit-reservation");
-    const closeButton = document.getElementById("close-modal");
-    const clearButton = document.getElementById("clear-selection");
+    {guest_js}
 
-    const totalTables = 16;
-    const seatsPerSide = 9;
-    const reservedSeats = new Set();
-    const selectedSeats = new Set();
-    let seatNumber = 1;
+    const tablePositions = {{
+      // Tischnummer: [x, y, width, height] — Werte als Prozentsätze (ungefähr! Du kannst sie später anpassen)
+      1: [10, 10, 5, 5], 2: [20, 10, 5, 5], 3: [30, 10, 5, 5], 4: [40, 10, 5, 5],
+      5: [10, 20, 5, 5], 6: [20, 20, 5, 5], 7: [30, 20, 5, 5], 8: [40, 20, 5, 5],
+      9: [10, 30, 5, 5], 10: [20, 30, 5, 5], 11: [30, 30, 5, 5], 12: [40, 30, 5, 5],
+      13: [10, 40, 5, 5], 14: [20, 40, 5, 5], 15: [30, 40, 5, 5], 16: [40, 40, 5, 5],
+      17: [10, 50, 5, 5], 18: [20, 50, 5, 5], 19: [30, 50, 5, 5], 20: [40, 50, 5, 5],
+      21: [10, 60, 5, 5], 22: [20, 60, 5, 5], 23: [30, 60, 5, 5], 24: [40, 60, 5, 5],
+      25: [10, 70, 5, 5], 26: [20, 70, 5, 5], 27: [30, 70, 5, 5], 28: [40, 70, 5, 5],
+      29: [10, 80, 5, 5], 30: [20, 80, 5, 5], 31: [30, 80, 5, 5], 32: [40, 80, 5, 5],
+      33: [85, 10, 5, 5], 34: [85, 15, 5, 5], 35: [85, 20, 5, 5], 36: [85, 25, 5, 5],
+      37: [85, 30, 5, 5], 38: [85, 35, 5, 5], 39: [85, 40, 5, 5], 40: [85, 45, 5, 5],
+      41: [85, 50, 5, 5], 42: [5, 10, 5, 5], 43: [5, 15, 5, 5], 44: [5, 20, 5, 5],
+      45: [5, 25, 5, 5], 46: [5, 30, 5, 5]
+    }};
 
-    for (let i = 0; i < totalTables; i++) {
-      const wrapper = document.createElement("div");
-      wrapper.classList.add("table-wrapper");
-
-      const leftCol = document.createElement("div");
-      leftCol.classList.add("seats-column");
-      for (let j = 0; j < seatsPerSide; j++) {
-        const seat = createSeat(seatNumber++);
-        leftCol.appendChild(seat);
-      }
-
-      const table = document.createElement("div");
-      table.classList.add("table");
-
-      const rightCol = document.createElement("div");
-      rightCol.classList.add("seats-column");
-      for (let j = 0; j < seatsPerSide; j++) {
-        const seat = createSeat(seatNumber++);
-        rightCol.appendChild(seat);
-      }
-
-      wrapper.appendChild(leftCol);
-      wrapper.appendChild(table);
-      wrapper.appendChild(rightCol);
-      hall.appendChild(wrapper);
-    }
-
-    function createSeat(number) {
-      const seat = document.createElement("div");
-      seat.classList.add("seat");
-      seat.textContent = number;
-      seat.dataset.seatNumber = number;
-      if (reservedSeats.has(number)) {
-        seat.classList.add("reserved");
-      } else {
-        seat.addEventListener("click", (e) => toggleSeat(seat, number, e));
-      }
-      return seat;
-    }
-
-    function toggleSeat(seat, number, event) {
-      if (seat.classList.contains("reserved")) return;
-      seat.classList.toggle("selected");
-      if (selectedSeats.has(number)) {
-        selectedSeats.delete(number);
-      } else {
-        selectedSeats.add(number);
-      }
-
-      if (selectedSeats.size > 0) {
-        const rect = seat.getBoundingClientRect();
-        modal.style.top = `${window.scrollY + rect.top}px`;
-        modal.style.left = `${window.scrollX + rect.left + 40}px`;
-        modal.style.display = "flex";
-      } else {
-        modal.style.display = "none";
-      }
-
-      updateClearButtonVisibility();
-    }
-
-    function updateClearButtonVisibility() {
-      clearButton.style.display = selectedSeats.size > 0 ? "block" : "none";
-    }
-
-    clearButton.addEventListener("click", () => {
-      selectedSeats.forEach((seatNumber) => {
-        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
-        seatDiv.classList.remove("selected");
-      });
-      selectedSeats.clear();
-      modal.style.display = "none";
-      updateClearButtonVisibility();
-    });
-
-    submitButton.addEventListener("click", () => {
-      const name = nameInput.value.trim();
-      if (!name || selectedSeats.size === 0) return;
-
-      selectedSeats.forEach((seatNumber) => {
-        const seatDiv = document.querySelector(`[data-seat-number='${seatNumber}']`);
-        seatDiv.classList.remove("selected");
-        seatDiv.classList.add("reserved");
-        seatDiv.removeEventListener("click", () => {});
-        reservedSeats.add(seatNumber);
-      });
-
-      // 🔗 Google Sheets Integration
-      fetch("https://script.google.com/macros/s/AKfycbw8D9wXFn7Y4gvGrDM208ZEgJy9w2cp2dxXqzdud6nJOtUF2jB9bcD_tZwMVXxVND0/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: name,
-          seats: [...selectedSeats]
-        })
-      });
-
-      alert(`Danke, ${name}! Du hast folgende Plätze reserviert: ${[...selectedSeats].join(", ")}`);
-      selectedSeats.clear();
-      nameInput.value = "";
-      modal.style.display = "none";
-      updateClearButtonVisibility();
-    });
-
-    closeButton.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
+    function highlightTable() {{
+      const name = document.getElementById("nameSelect").value;
+      const table = guests[name];
+      const box = document.getElementById("highlightBox");
+      if (!table || !tablePositions[table]) {{
+        box.style.display = "none";
+        return;
+      }}
+      const [x, y, w, h] = tablePositions[table];
+      box.style.display = "block";
+      box.style.left = x + "%";
+      box.style.top = y + "%";
+      box.style.width = w + "%";
+      box.style.height = h + "%";
+    }}
   </script>
 </body>
 </html>
+"""
+
+# Speichere den HTML-Code in eine Datei
+html_path = "/mnt/data/sitzplan_app.html"
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(html_template)
+
+html_path
