@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sitzplatzsuche Abiball</title>
   <style>
     body {
@@ -16,11 +17,14 @@
       margin: 20px;
       font-size: 16px;
       padding: 5px 10px;
+      width: 90%;
+      max-width: 300px;
     }
     #plan {
       position: relative;
-      width: 1000px;
-      height: 1300px;
+      width: 100%;
+      max-width: 400px;
+      height: 1600px;
       margin: auto;
       background: #f9f9f9;
       border: 2px solid #ccc;
@@ -29,19 +33,20 @@
       position: absolute;
       border: 2px solid black;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-weight: bold;
       background: white;
-      transition: 0.2s;
+      font-size: 14px;
     }
     .rect-table {
       border-radius: 5px;
-      width: 90px;
-      height: 30px;
+      width: 70px;
+      height: 25px;
+      font-size: 12px;
     }
     .highlight {
       background: deeppink !important;
@@ -83,23 +88,24 @@
     const plan = document.getElementById("plan");
     const select = document.getElementById("nameSelect");
 
-    // RUND: 4 Spalten, 8 Reihen, mehr Abstand, Start x=120, y=100
     let i = 1;
     for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 4; col++) {
-        const x = 120 + col * 180;
-        const y = 100 + row * 110;
+      for (let col = 0; col < 2; col++) {
+        const x = 90 + col * 160;
+        const y = 100 + row * 160;
         createTable(i, x, y);
+        i++;
+        const x2 = 320 + col * 160;
+        createTable(i, x2, y);
         i++;
       }
     }
-    // RECHTECKIG LINKS: 42–46
+
     for (let j = 0; j < 5; j++) {
-      createTable(42 + j, 10, 100 + j * 110, true);
+      createTable(42 + j, 10, 100 + j * 160, true);
     }
-    // RECHTECKIG RECHTS: 33–41
     for (let j = 0; j < 9; j++) {
-      createTable(33 + j, 890, 100 + j * 110, true);
+      createTable(33 + j, 310, 100 + j * 160, true);
     }
 
     function createTable(num, x, y, rect = false) {
