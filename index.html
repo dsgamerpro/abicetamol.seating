@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sitzplatz-Suche Abiball</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #seating-chart {
+      position: relative;
+      display: inline-block;
+      width: 800px;
+    }
+    #seating-chart img {
+      width: 100%;
+      height: auto;
+    }
+    .highlight {
+      position: absolute;
+      border: 3px solid deeppink;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 10px deeppink;
+      z-index: 10;
+    }
+    select {
+      margin: 20px auto;
+      font-size: 16px;
+      padding: 6px 12px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sitzplatzsuche Abiball</h1>
+  <p>Wähle deinen Namen aus:</p>
+  <select id="nameSelect" onchange="highlightTable()">
+    <option value="">-- Bitte Namen wählen --</option>
+    <option value="Al Mallah">Al Mallah</option><option value="Albert">Albert</option><option value="Bakir">Bakir</option><option value="Bochem">Bochem</option><option value="Brüßel">Brüßel</option><option value="Bugatto">Bugatto</option><option value="Bähr">Bähr</option><option value="Böhme">Böhme</option><option value="Büllesbach">Büllesbach</option><option value="Cevela">Cevela</option><option value="Chmiel">Chmiel</option><option value="Christian">Christian</option><option value="Cosic">Cosic</option><option value="Cumpanici">Cumpanici</option><option value="De Waele">De Waele</option><option value="Diewald">Diewald</option><option value="Dresen">Dresen</option><option value="Eck">Eck</option><option value="Eckhard">Eckhard</option><option value="Ekler">Ekler</option><option value="Fichna">Fichna</option><option value="Friesen">Friesen</option><option value="Gardi">Gardi</option><option value="Gensel">Gensel</option><option value="Gerboga">Gerboga</option><option value="Gottschling">Gottschling</option><option value="Habroune">Habroune</option><option value="Hansen">Hansen</option><option value="Hartmann">Hartmann</option><option value="Hashemian">Hashemian</option><option value="Hemgesberg">Hemgesberg</option><option value="Henseler">Henseler</option><option value="Herweg">Herweg</option><option value="Hirgen">Hirgen</option><option value="Hoffmann">Hoffmann</option><option value="Hußlein">Hußlein</option><option value="Jäger">Jäger</option><option value="Kaasch">Kaasch</option><option value="Kelter">Kelter</option><option value="Kempchen">Kempchen</option><option value="Klein">Klein</option><option value="Konda">Konda</option><option value="Krasniqui">Krasniqui</option><option value="Krieger">Krieger</option><option value="Kriese">Kriese</option><option value="Krämer">Krämer</option><option value="LehrerInnen">LehrerInnen</option><option value="Lischke">Lischke</option><option value="Lojade">Lojade</option><option value="Lübke">Lübke</option><option value="Mahlberg">Mahlberg</option><option value="Maktad">Maktad</option><option value="Marienfeld">Marienfeld</option><option value="Mazur">Mazur</option><option value="McCann">McCann</option><option value="Michalska">Michalska</option><option value="Milani">Milani</option><option value="Over">Over</option><option value="Petereit">Petereit</option><option value="Poggel">Poggel</option><option value="Quannani">Quannani</option><option value="Raaf">Raaf</option><option value="Reuter">Reuter</option><option value="Rexhepi">Rexhepi</option><option value="Richter">Richter</option><option value="Rillig">Rillig</option><option value="Ritz">Ritz</option><option value="Romauer">Romauer</option><option value="Romes">Romes</option><option value="Roos">Roos</option><option value="Salomon">Salomon</option><option value="Schilling">Schilling</option><option value="Schmiing">Schmiing</option><option value="Schmitz. B">Schmitz. B</option><option value="Schmitz. N">Schmitz. N</option><option value="Schultheis">Schultheis</option><option value="Schwarz">Schwarz</option><option value="Shakir">Shakir</option><option value="Simon">Simon</option><option value="Sistig">Sistig</option><option value="Steinhoff">Steinhoff</option><option value="Straßburger">Straßburger</option><option value="Studeny">Studeny</option><option value="Thevis">Thevis</option><option value="Thome">Thome</option><option value="Ucar">Ucar</option><option value="Wall">Wall</option><option value="Wandel">Wandel</option><option value="Wehrend">Wehrend</option><option value="Wölfing">Wölfing</option><option value="Younssi">Younssi</option><option value="Yousif">Yousif</option><option value="Zubair">Zubair</option><option value="Zwick">Zwick</option><option value="v. Kannen">v. Kannen</option>
+  </select>
+
+  <div id="seating-chart">
+    <img id="seatingImage" src="sitzplan.png" alt="Sitzplan">
+    <div id="highlightBox" class="highlight" style="display:none;"></div>
+  </div>
+
+  <script>
+    const guests = {
+  "Al Mallah": 28,
+  "Albert": 15,
+  "Bakir": 23,
+  "Bochem": 25,
+  "Brüßel": 43,
+  "Bugatto": 41,
+  "Bähr": 21,
+  "Böhme": 31,
+  "Büllesbach": 37,
+  "Cevela": 26,
+  "Chmiel": 4,
+  "Christian": 19,
+  "Cosic": 45,
+  "Cumpanici": 38,
+  "De Waele": 5,
+  "Diewald": 10,
+  "Dresen": 22,
+  "Eck": 10,
+  "Eckhard": 46,
+  "Ekler": 11,
+  "Fichna": 37,
+  "Friesen": 2,
+  "Gardi": 41,
+  "Gensel": 9,
+  "Gerboga": 40,
+  "Gottschling": 27,
+  "Habroune": 27,
+  "Hansen": 1,
+  "Hartmann": 35,
+  "Hashemian": 20,
+  "Hemgesberg": 20,
+  "Henseler": 11,
+  "Herweg": 36,
+  "Hirgen": 10,
+  "Hoffmann": 36,
+  "Hußlein": 39,
+  "Jäger": 28,
+  "Kaasch": 29,
+  "Kelter": 39,
+  "Kempchen": 44,
+  "Klein": 3,
+  "Konda": 31,
+  "Krasniqui": 24,
+  "Krieger": 38,
+  "Kriese": 33,
+  "Krämer": 8,
+  "LehrerInnen": 6,
+  "Lischke": 46,
+  "Lojade": 1,
+  "Lübke": 14,
+  "Mahlberg": 35,
+  "Maktad": 25,
+  "Marienfeld": 13,
+  "Mazur": 44,
+  "McCann": 13,
+  "Michalska": 24,
+  "Milani": 24,
+  "Over": 26,
+  "Petereit": 32,
+  "Poggel": 17,
+  "Quannani": 42,
+  "Raaf": 2,
+  "Reuter": 30,
+  "Rexhepi": 41,
+  "Richter": 18,
+  "Rillig": 3,
+  "Ritz": 4,
+  "Romauer": 43,
+  "Romes": 16,
+  "Roos": 12,
+  "Salomon": 5,
+  "Schilling": 42,
+  "Schmiing": 32,
+  "Schmitz. B": 30,
+  "Schmitz. N": 45,
+  "Schultheis": 15,
+  "Schwarz": 16,
+  "Shakir": 42,
+  "Simon": 19,
+  "Sistig": 33,
+  "Steinhoff": 12,
+  "Straßburger": 8,
+  "Studeny": 11,
+  "Thevis": 8,
+  "Thome": 34,
+  "Ucar": 29,
+  "Wall": 42,
+  "Wandel": 14,
+  "Wehrend": 18,
+  "Wölfing": 9,
+  "Younssi": 42,
+  "Yousif": 42,
+  "Zubair": 40,
+  "Zwick": 21,
+  "v. Kannen": 3,
+};
+    const tablePositions = {
+  1: [138.79, 99.93, 27.76, 27.76],
+  2: [260.93, 99.93, 27.76, 27.76],
+  3: [383.07, 99.93, 27.76, 27.76],
+  4: [505.2, 99.93, 27.76, 27.76],
+  5: [138.79, 188.76, 27.76, 27.76],
+  6: [260.93, 188.76, 27.76, 27.76],
+  7: [383.07, 188.76, 27.76, 27.76],
+  8: [505.2, 188.76, 27.76, 27.76],
+  9: [138.79, 277.59, 27.76, 27.76],
+  10: [260.93, 277.59, 27.76, 27.76],
+  11: [383.07, 277.59, 27.76, 27.76],
+  12: [505.2, 277.59, 27.76, 27.76],
+  13: [138.79, 366.41, 27.76, 27.76],
+  14: [260.93, 366.41, 27.76, 27.76],
+  15: [383.07, 366.41, 27.76, 27.76],
+  16: [505.2, 366.41, 27.76, 27.76],
+  17: [138.79, 455.24, 27.76, 27.76],
+  18: [260.93, 455.24, 27.76, 27.76],
+  19: [383.07, 455.24, 27.76, 27.76],
+  20: [505.2, 455.24, 27.76, 27.76],
+  21: [138.79, 544.07, 27.76, 27.76],
+  22: [260.93, 544.07, 27.76, 27.76],
+  23: [383.07, 544.07, 27.76, 27.76],
+  24: [505.2, 544.07, 27.76, 27.76],
+  25: [138.79, 632.89, 27.76, 27.76],
+  26: [260.93, 632.89, 27.76, 27.76],
+  27: [383.07, 632.89, 27.76, 27.76],
+  28: [505.2, 632.89, 27.76, 27.76],
+  29: [138.79, 721.72, 27.76, 27.76],
+  30: [260.93, 721.72, 27.76, 27.76],
+  31: [383.07, 721.72, 27.76, 27.76],
+  32: [505.2, 721.72, 27.76, 27.76],
+  42: [38.86, 99.93, 33.31, 33.31],
+  43: [38.86, 188.76, 33.31, 33.31],
+  44: [38.86, 277.59, 33.31, 33.31],
+  45: [38.86, 366.41, 33.31, 33.31],
+  46: [38.86, 455.24, 33.31, 33.31],
+  33: [616.24, 99.93, 33.31, 33.31],
+  34: [616.24, 188.76, 33.31, 33.31],
+  35: [616.24, 277.59, 33.31, 33.31],
+  36: [616.24, 366.41, 33.31, 33.31],
+  37: [616.24, 455.24, 33.31, 33.31],
+  38: [616.24, 544.07, 33.31, 33.31],
+  39: [616.24, 632.89, 33.31, 33.31],
+  40: [616.24, 721.72, 33.31, 33.31],
+  41: [616.24, 810.55, 33.31, 33.31],
+};
+
+    function highlightTable() {
+      const name = document.getElementById("nameSelect").value;
+      const table = guests[name];
+      const box = document.getElementById("highlightBox");
+
+      if (!table || !tablePositions[table]) {
+        box.style.display = "none";
+        return;
+      }
+
+      const [x, y, w, h] = tablePositions[table];
+      box.style.display = "block";
+      box.style.left = x + "px";
+      box.style.top = y + "px";
+      box.style.width = w + "px";
+      box.style.height = h + "px";
+    }
+  </script>
+</body>
+</html>
