@@ -9,34 +9,47 @@
       font-family: sans-serif;
       text-align: center;
       background: #fff;
+      margin: 0;
+      padding: 0;
     }
     h1 {
       margin-top: 20px;
     }
     select {
-      margin: 20px;
+      margin: 20px auto;
       font-size: 16px;
       padding: 5px 10px;
       width: 90%;
       max-width: 300px;
     }
-    #plan {
-      position: relative;
+    .container {
       width: 100%;
-      max-width: 800px;
-      height: 1136px;
-      margin: auto;
-      background: url("plan.png") no-repeat center center;
-      background-size: contain;
+      max-width: 768px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .table {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid black;
+      font-weight: bold;
+    }
+    .round {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: white;
+    }
+    .rect {
+      width: 60px;
+      height: 30px;
+      background-color: white;
     }
     .highlight {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background-color: deeppink;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+      background-color: deeppink !important;
+      color: white;
     }
   </style>
 </head>
@@ -46,9 +59,8 @@
   <select id="nameSelect" onchange="highlight()">
     <option value="">-- Bitte Namen wählen --</option>
   </select>
-  <div id="plan">
-    <div id="marker" class="highlight" style="display:none;"></div>
-  </div>
+  <div class="container" id="plan"></div>
+
   <script>
     const guests = {
       "Al Mallah": 28, "Albert": 15, "Bakir": 23, "Bochem": 25, "Brüßel": 43, "Bugatto": 41,
@@ -70,40 +82,47 @@
       "v. Kannen": 3
     };
 
+    const tableMap = {};
+    const plan = document.getElementById("plan");
+
     const positions = {
-      1:[100,150], 2:[180,150], 3:[260,150], 4:[340,150],
-      5:[100,240], 6:[180,240], 7:[260,240], 8:[340,240],
-      9:[100,330],10:[180,330],11:[260,330],12:[340,330],
-      13:[100,420],14:[180,420],15:[260,420],16:[340,420],
-      17:[100,510],18:[180,510],19:[260,510],20:[340,510],
-      21:[100,600],22:[180,600],23:[260,600],24:[340,600],
-      25:[100,690],26:[180,690],27:[260,690],28:[340,690],
-      29:[100,780],30:[180,780],31:[260,780],32:[340,780],
-      33:[440,150],34:[440,240],35:[440,330],36:[440,420],37:[440,510],38:[440,600],39:[440,690],40:[440,780],41:[440,870],
-      42:[10,150],43:[10,240],44:[10,330],45:[10,420],46:[10,510]
+      1:[140,100], 2:[210,100], 3:[280,100], 4:[350,100],
+      5:[140,180], 6:[210,180], 7:[280,180], 8:[350,180],
+      9:[140,260],10:[210,260],11:[280,260],12:[350,260],
+      13:[140,340],14:[210,340],15:[280,340],16:[350,340],
+      17:[140,420],18:[210,420],19:[280,420],20:[350,420],
+      21:[140,500],22:[210,500],23:[280,500],24:[350,500],
+      25:[140,580],26:[210,580],27:[280,580],28:[350,580],
+      29:[140,660],30:[210,660],31:[280,660],32:[350,660],
+      33:[440,100],34:[440,180],35:[440,260],36:[440,340],37:[440,420],38:[440,500],39:[440,580],40:[440,660],41:[440,740],
+      42:[40,100],43:[40,180],44:[40,260],45:[40,340],46:[40,420]
     };
 
-    const marker = document.getElementById("marker");
-    const select = document.getElementById("nameSelect");
+    for (let i = 1; i <= 46; i++) {
+      const div = document.createElement("div");
+      div.textContent = i;
+      div.className = `table ${i <= 32 ? 'round' : 'rect'}`;
+      const [x, y] = positions[i];
+      div.style.left = x + 'px';
+      div.style.top = y + 'px';
+      div.style.position = 'absolute';
+      plan.appendChild(div);
+      tableMap[i] = div;
+    }
 
     for (const name in guests) {
       const opt = document.createElement("option");
       opt.value = name;
       opt.textContent = name;
-      select.appendChild(opt);
+      document.getElementById("nameSelect").appendChild(opt);
     }
 
     function highlight() {
-      const name = select.value;
-      if (!name || !guests[name]) {
-        marker.style.display = "none";
-        return;
-      }
+      document.querySelectorAll('.table').forEach(t => t.classList.remove('highlight'));
+      const name = document.getElementById("nameSelect").value;
+      if (!name || !guests[name]) return;
       const table = guests[name];
-      const [x, y] = positions[table];
-      marker.style.left = `${x}px`;
-      marker.style.top = `${y}px`;
-      marker.style.display = "block";
+      tableMap[table].classList.add('highlight');
     }
   </script>
 </body>
