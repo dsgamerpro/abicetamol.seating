@@ -25,19 +25,16 @@
       box-sizing: border-box;
     }
     .container {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       overflow: auto;
-      touch-action: none;
-      display: flex;
-      justify-content: center;
+      touch-action: pan-x pan-y;
     }
     .container-inner {
       position: relative;
-      width: 800px;
-      min-width: 800px;
-      height: 1000px;
-      margin: 0 auto;
+      width: 1000px;
+      height: 1200px;
+      margin: 0;
     }
     .table {
       position: absolute;
@@ -62,7 +59,7 @@
       height: 40px;
       background-color: white;
     }
-    .highlight, .table:hover, .table:focus {
+    .selected {
       background-color: deeppink !important;
       color: white;
     }
@@ -125,7 +122,7 @@
       "Cosic": 45, "Cumpanici": 38, "De Waele": 5, "Diewald": 10, "Dresen": 22, "Eck": 10,
       "Eckhard": 46, "Ekler": 11, "Fichna": 37, "Friesen": 2, "Gardi": 41, "Gensel": 9,
       "Gerboga": 40, "Gottschling": 27, "Habroune": 27, "Hansen": [1, 34], "Hartmann": 35,
-      "Hashemian": 20, "Hemgesberg": 20, "Henseler": 11, "Herweg": 36, "Hirgen": 10,
+      "Hashemian": 20, "Hemgesberg": 20, "Henseler": 11, "Herweg": 36, "Higgen": 10,
       "Hoffmann": 36, "Hußlein": 39, "Jojade": 1, "Jäger": 28, "Kaasch": 29, "Kelter": 39,
       "Kempchen": 44, "Klein": 3, "Konda": 31, "Krasniqui": 24, "Krieger": 38, "Kriese": 33,
       "Krämer": 8, "LehrerInnen": [6, 7], "Lischke": 46, "Lübke": 14, "Mahlberg": 35,
@@ -154,7 +151,7 @@
     const tooltip = document.getElementById("tooltip");
 
     const positions = {};
-    const centerX = 350;
+    const centerX = 450;
     const startY = 100;
     const xSpacing = 80;
     const ySpacing = 80;
@@ -188,25 +185,20 @@
       const [x, y] = positions[i];
       div.style.left = x + 'px';
       div.style.top = y + 'px';
-      div.style.position = 'absolute';
 
-      div.addEventListener('mouseenter', (e) => {
-        const names = tableGuests[i] ? tableGuests[i].join("\n") : "(leer)";
-        tooltip.textContent = names;
-        tooltip.style.display = 'block';
-        tooltip.style.left = (e.pageX + 10) + 'px';
-        tooltip.style.top = (e.pageY + 10) + 'px';
-        div.classList.add('highlight');
-      });
-      div.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
-        if (!div.classList.contains('selected')) {
-          div.classList.remove('highlight');
-        }
-      });
-      div.addEventListener('click', () => {
+      div.addEventListener('click', (e) => {
+        const isSelected = div.classList.contains('selected');
         document.querySelectorAll('.table').forEach(t => t.classList.remove('selected'));
-        div.classList.add('selected');
+        tooltip.style.display = 'none';
+
+        if (!isSelected) {
+          div.classList.add('selected');
+          const names = tableGuests[i] ? tableGuests[i].join("\n") : "(leer)";
+          tooltip.textContent = names;
+          tooltip.style.display = 'block';
+          tooltip.style.left = (e.pageX + 10) + 'px';
+          tooltip.style.top = (e.pageY + 10) + 'px';
+        }
       });
 
       plan.appendChild(div);
@@ -221,12 +213,13 @@
     }
 
     function highlight() {
-      document.querySelectorAll('.table').forEach(t => t.classList.remove('highlight', 'selected'));
+      document.querySelectorAll('.table').forEach(t => t.classList.remove('selected'));
+      tooltip.style.display = 'none';
       const name = document.getElementById("nameSelect").value;
       if (!name || !guests[name]) return;
       const tables = Array.isArray(guests[name]) ? guests[name] : [guests[name]];
       for (const table of tables) {
-        tableMap[table].classList.add('highlight', 'selected');
+        tableMap[table].classList.add('selected');
       }
     }
   </script>
