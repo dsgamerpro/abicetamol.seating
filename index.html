@@ -11,7 +11,6 @@
       background: #fff;
       margin: 0;
       padding: 0;
-      overflow: hidden;
     }
     h1 {
       margin-top: 20px;
@@ -25,20 +24,9 @@
       max-width: 300px;
       box-sizing: border-box;
     }
-    .controls {
-      margin: 10px auto;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .controls button {
-      font-size: 18px;
-      padding: 6px 12px;
-      cursor: pointer;
-    }
     .container {
       width: 100vw;
-      height: calc(100vh - 150px);
+      height: calc(100vh - 120px);
       overflow: auto;
       touch-action: pan-x pan-y;
     }
@@ -47,8 +35,6 @@
       width: 1000px;
       height: 1200px;
       margin: 0;
-      transform-origin: top left;
-      transition: transform 0.2s ease;
     }
     .table {
       position: absolute;
@@ -121,11 +107,6 @@
   <select id="nameSelect" onchange="highlight()">
     <option value="">-- Bitte Namen wählen --</option>
   </select>
-
-  <div class="controls">
-    <button onclick="zoomOut()">−</button>
-    <button onclick="zoomIn()">+</button>
-  </div>
 
   <div class="container">
     <div class="container-inner" id="plan">
@@ -241,25 +222,6 @@
       const tables = Array.isArray(guests[name]) ? guests[name] : [guests[name]];
       for (const table of tables) {
         tableMap[table].classList.add('selected');
-      }
-    }
-
-    // Zoom-Funktion
-    let zoomLevel = 1;
-    function applyZoom() {
-      const container = document.querySelector('.container-inner');
-      container.style.transform = `scale(${zoomLevel})`;
-    }
-    function zoomIn() {
-      if (zoomLevel < 2) {
-        zoomLevel += 0.1;
-        applyZoom();
-      }
-    }
-    function zoomOut() {
-      if (zoomLevel > 0.5) {
-        zoomLevel -= 0.1;
-        applyZoom();
       }
     }
   </script>
